@@ -8,9 +8,9 @@
 <script>
   export default {
     name: 'cell',
-    props: ['data', 'rn', 'cn'],
+    props: ['data', 'dead'],
     data () {
-      return {open: false, flag: false, dead: false, triggerDead: false, active: false}
+      return {open: false, flag: false, triggerDead: false, active: false}
     },
     computed: {
       cell () {

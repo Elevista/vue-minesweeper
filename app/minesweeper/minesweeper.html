@@ -3,7 +3,7 @@
     <div class="left">
       <span class="count" v-for="x of leftNum" :class="'n'+x">{{x}}</span>
     </div>
-    <button class="smiley" :class="[smiley,{ooh:mouseBtn[0]}]" @click="reset()"></button>
+    <button class="smiley" :class="[state,{ooh:mouseBtn[0]}]" @click="reset()"></button>
     <div class="right">
       <span class="count" v-for="x of rightNum" :class="'n'+x">{{x}}</span>
     </div>
@@ -11,7 +11,7 @@
 
   <div class="board">
     <div v-for="(row,rn) of grid" class="row">
-      <cell v-for="(cell,cn) of row" ref="cells" :data="cell" :key="cn"
+      <cell v-for="(cell,cn) of row" ref="cells" :data="cell" :key="cn" :dead="state.dead"
             @mark="mark($event)"
             @mousedown.native="mousedown($event,rn,cn)"
             @mouseup.native="mouseup($event,rn,cn)"

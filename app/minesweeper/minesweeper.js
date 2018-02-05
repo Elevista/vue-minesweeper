@@ -5,8 +5,8 @@ export default {
   data () {
     return {
       grid: [[]],
-      smiley: {dead: false, win: false},
-      duringGame: false,
+      state: {dead: false, win: false},
+      gameStart: false,
       size: [9, 9],
       openCount: 0,
       flagCount: 0,
@@ -32,9 +32,9 @@ export default {
     reset (size, mineTotal = 0) {
       if (size) Object.assign(this, {size, mineTotal})
       this.timer = 0
-      this.duringGame = false
+      this.gameStart = false
       this.flagCount = 0
-      this.smiley = {dead: false, win: false}
+      this.state = {dead: false, win: false}
       let [height, width] = this.size
       let mines = _.times(this.mineTotal, () => true)
       let empty = _.times(width * height - this.mineTotal, () => false)
@@ -64,14 +64,14 @@ export default {
       this.win()
     },
     win () {
-      this.smiley.win = true
-      this.duringGame = false
+      this.state.win = true
+      this.gameStart = false
     },
     dead (cell) {
-      this.duringGame = false
-      this.smiley.dead = true
+      this.gameStart = false
+      this.state.dead = true
       cell.triggerDead = true // this cell caused dead
-      this.$refs.cells.forEach(x => { x.dead = x.open = true })
+      this.$refs.cells.forEach(x => { x.open = true })
     },
     open (cell) {
       if (!cell || !cell.doOpen()) return // open fail
@@ -80,7 +80,7 @@ export default {
       return !adjMine && this.getAdjCellComp(rn, cn)
     },
     openPropagation (cell) {
-      this.duringGame = true
+      if (!cell.open) this.gameStart = true
       let queue = [cell]
       while (queue.length) queue.push(...(this.open(queue.shift()) || []))
       this.openCount = _.sumBy(this.$refs.cells, 'open')
@@ -118,7 +118,7 @@ export default {
     }
   },
   watch: {
-    duringGame (truthy) {
+    gameStart (truthy) {
       if (truthy) {
         this.timer = 1
         this.timerInterval = setInterval(() => this.timer++, 1000)
