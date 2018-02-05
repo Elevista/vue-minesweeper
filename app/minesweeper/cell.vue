@@ -1,5 +1,5 @@
 <template>
-  <button class="cell" :class="[cell,{active,dead,flag,open,triggerDead}]"
+  <button class="cell" :class="[state,{active,dead,flag,open,triggerDead}]"
           @mousedown.left="active=true"
           @mouseout.left="active=false"
           @mouseup="active=false"></button>
@@ -13,7 +13,7 @@
       return {open: false, flag: false, triggerDead: false, active: false}
     },
     computed: {
-      cell () {
+      state () {
         if (!this.open) return
         return this.data.mine ? 'mine' : 'n' + this.data.adjMine
       }

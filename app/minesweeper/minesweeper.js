@@ -59,8 +59,8 @@ export default {
       return this.$data._adj.map(([r, c]) => this.getCellComp(rn + r, cn + c)).filter(x => x)
     },
     checkWin () {
-      if (this.flagCount + this.openCount < this.$refs.cells.length) return
-      if (this.mineTotal - this.flagCount) return
+      let {state: {dead}, flagCount, openCount, $refs: {cells: {length}}} = this
+      if (dead || ((flagCount + openCount) !== length)) return
       this.win()
     },
     win () {
@@ -82,7 +82,7 @@ export default {
     openPropagation (cell) {
       if (!cell.open) this.gameStart = true
       let queue = [cell]
-      while (queue.length) queue.push(...(this.open(queue.shift()) || []))
+      while (queue.length) queue.push(...(this.open(queue.shift()) || [])) // Breadth First Search
       this.openCount = _.sumBy(this.$refs.cells, 'open')
       this.checkWin()
     },
