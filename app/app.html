@@ -1,0 +1,9 @@
+<div class="app">
+  <minesweeper ref="minesweeper"/>
+  <div class="option">
+    <select v-model="level">
+      <option v-for="item of levels" :value="item">{{item.name}}</option>
+    </select>
+    <button @click="reset">reset</button>
+  </div>
+</div>

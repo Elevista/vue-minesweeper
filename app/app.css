@@ -1,0 +1,8 @@
+.option {
+  margin-top: 40px;
+  font-size: 10px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.option input {
+  width: 50px;
+}
