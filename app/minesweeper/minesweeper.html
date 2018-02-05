@@ -11,7 +11,7 @@
 
   <div class="board">
     <div v-for="row of grid" class="row">
-      <cell v-for="data of row" ref="cells" :data="data" :key="data.cn" :dead="state.dead"
+      <cell v-for="data of row" ref="cells" :data="data" :key="data.cn" :state="state"
             @mousedown.native="mousedown($event,data)"
             @mouseup.native="mouseup($event,data)"
             @mouseout.native="mouseout">{{data}}</cell>

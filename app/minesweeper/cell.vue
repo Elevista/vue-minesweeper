@@ -1,5 +1,5 @@
 <template>
-  <button class="cell" :class="[state,{active,dead,flag,open,triggerDead}]"
+  <button class="cell" :class="[display,{active,flag,open,triggerDead}]"
           @mousedown.left="active=true"
           @mouseout.left="active=false"
           @mouseup="active=false"></button>
@@ -8,13 +8,13 @@
 <script>
   export default {
     name: 'cell',
-    props: ['data', 'dead'],
+    props: ['data', 'state'],
     data () {
       return {open: false, flag: false, triggerDead: false, active: false}
     },
     computed: {
-      state () {
-        if (!this.open) return
+      display () {
+        if (!this.open && !this.state.dead) return // if open or dead, display value
         return this.data.mine ? 'mine' : 'n' + this.data.adjMine
       }
     },

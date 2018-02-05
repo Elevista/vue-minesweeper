@@ -68,10 +68,9 @@ export default {
       this.gameStart = false
     },
     dead (cell) {
-      this.gameStart = false
       this.state.dead = true
+      this.gameStart = false
       cell.triggerDead = true // this cell caused dead
-      this.$refs.cells.forEach(x => { x.open = true })
     },
     open (cell) {
       if (!cell.doOpen()) return // open fail
