@@ -74,7 +74,7 @@ export default {
       this.$refs.cells.forEach(x => { x.dead = x.open = true })
     },
     open (cell) {
-      if (!cell.doOpen()) return // open fail
+      if (!cell || !cell.doOpen()) return // open fail
       let {rn, cn, mine, adjMine} = cell.data
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(rn, cn)

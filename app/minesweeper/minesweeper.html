@@ -10,7 +10,7 @@
   </div>
 
   <div class="board">
-    <div v-for="row of grid" class="row">
+    <div v-for="(row,rn) of grid" class="row">
       <cell v-for="(cell,cn) of row" ref="cells" :data="cell" :key="cn"
             @mark="mark($event)"
             @mousedown.native="mousedown($event,rn,cn)"
