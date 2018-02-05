@@ -25,7 +25,7 @@ export default {
       return n < 0 ? '-' + _.padStart(Math.abs(n), 2, 0) : _.padStart(n, 3, 0)
     },
     rightNum () {
-      return _.padStart(Math.min(this.timer, 999), 3, 0)
+      return _.padStart(_.clamp(this.timer, 0, 999), 3, 0)
     }
   },
   methods: {
@@ -74,7 +74,7 @@ export default {
       this.$refs.cells.forEach(x => { x.open = true })
     },
     open (cell) {
-      if (!cell || !cell.doOpen()) return // open fail
+      if (!cell.doOpen()) return // open fail
       let {rn, cn, mine, adjMine} = cell.data
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(rn, cn)
@@ -92,16 +92,16 @@ export default {
     },
     grabAdj (rn, cn) {
       this.selectedAdj = this.getAdjCellComp(rn, cn)
-      this.selectedAdj.forEach(cell => cell && (cell.active = true))
+      this.selectedAdj.forEach(cell => { cell.active = true })
     },
     releaseAdj (cell) {
       if (cell && cell.open && (cell.data.adjMine === _.sumBy(this.selectedAdj, 'flag'))) {
         this.selectedAdj.forEach(cell => this.openPropagation(cell))
       }
-      this.selectedAdj.forEach(cell => cell && (cell.active = false))
+      this.selectedAdj.forEach(cell => { cell.active = false })
       this.selectedAdj = []
     },
-    mousedown ($event, rn, cn) {
+    mousedown ($event, {rn, cn}) {
       this.$set(this.mouseBtn, $event.button, true)
       if (this.mouseBtn[0] && this.mouseBtn[2]) this.grabAdj(rn, cn)
     },
@@ -109,7 +109,7 @@ export default {
       if (this.mouseBtn[0] && this.mouseBtn[2]) this.releaseAdj(false)
       this.mouseBtn = [false, false, false]
     },
-    mouseup ($event, rn, cn) {
+    mouseup ($event, {rn, cn}) {
       let cell = this.getCellComp(rn, cn)
       if (this.mouseBtn[0] && this.mouseBtn[2]) this.releaseAdj(cell)
       else if (this.mouseBtn[0]) this.openPropagation(cell)
@@ -117,6 +117,7 @@ export default {
       this.mouseBtn = [false, false, false]
     }
   },
+  destroyed () { clearInterval(this.timerInterval) },
   watch: {
     gameStart (truthy) {
       if (truthy) {

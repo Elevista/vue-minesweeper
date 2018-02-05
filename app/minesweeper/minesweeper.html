@@ -10,12 +10,12 @@
   </div>
 
   <div class="board">
-    <div v-for="(row,rn) of grid" class="row">
-      <cell v-for="(cell,cn) of row" ref="cells" :data="cell" :key="cn" :dead="state.dead"
+    <div v-for="row of grid" class="row">
+      <cell v-for="data of row" ref="cells" :data="data" :key="data.cn" :dead="state.dead"
             @mark="mark($event)"
-            @mousedown.native="mousedown($event,rn,cn)"
-            @mouseup.native="mouseup($event,rn,cn)"
-            @mouseout.native="mouseout">{{cell}}</cell>
+            @mousedown.native="mousedown($event,data)"
+            @mouseup.native="mouseup($event,data)"
+            @mouseout.native="mouseout">{{data}}</cell>
     </div>
     </tbody>
   </div>
