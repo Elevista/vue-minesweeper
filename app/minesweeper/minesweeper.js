@@ -86,7 +86,8 @@ export default {
       this.openCount = _.sumBy(this.$refs.cells, 'open')
       this.checkWin()
     },
-    mark () {
+    mark (cell) {
+      if (!cell.mark()) return // mark fail
       this.flagCount = _.sumBy(this.$refs.cells, 'flag')
       this.checkWin()
     },
@@ -113,7 +114,7 @@ export default {
       let cell = this.getCellComp(rn, cn)
       if (this.mouseBtn[0] && this.mouseBtn[2]) this.releaseAdj(cell)
       else if (this.mouseBtn[0]) this.openPropagation(cell)
-      else if (this.mouseBtn[2]) cell.mark()
+      else if (this.mouseBtn[2]) this.mark(cell)
       this.mouseBtn = [false, false, false]
     }
   },

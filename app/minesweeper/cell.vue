@@ -25,9 +25,9 @@
         return true
       },
       mark () {
-        if (this.open) return
+        if (this.open) return false
         this.flag = !this.flag
-        this.$emit('mark')
+        return true
       }
     }
   }
