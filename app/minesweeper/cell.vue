@@ -14,8 +14,9 @@
     },
     computed: {
       display () {
-        if (!this.open && !this.state.dead) return // if open or dead, display value
-        return this.data.mine ? 'mine' : 'n' + this.data.adjMine
+        let {open, data: {mine, adjMine}, state: {dead}} = this
+        if (open) return mine ? 'mine' : 'n' + adjMine
+        if (dead) return ['dead', mine && 'mine']
       }
     },
     methods: {
