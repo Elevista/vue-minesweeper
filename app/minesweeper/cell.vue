@@ -1,5 +1,5 @@
 <template>
-  <button class="cell" :class="[display,{active,flag,open,triggerDead}]"
+  <button class="cell" :class="[display,{active,flag,fixed,triggerDead}]"
           @mousedown.left="active=true"
           @mouseout.left="active=false"
           @mouseup="active=false"></button>
@@ -17,16 +17,17 @@
         let {open, data: {mine, adjMine}, state: {dead}} = this
         if (open) return mine ? 'mine' : 'n' + adjMine
         if (dead) return ['dead', mine && 'mine']
-      }
+      },
+      fixed () { return this.state.dead || this.state.win || this.open }
     },
     methods: {
       doOpen () {
-        if (this.open || this.flag) return false
+        if (this.fixed || this.flag) return false
         this.open = true
         return true
       },
       mark () {
-        if (this.open) return false
+        if (this.fixed) return false
         this.flag = !this.flag
         return true
       }
@@ -45,8 +46,8 @@
     margin: 0;
     padding: 0;
   }
-  .cell:not(.open) {background-position: 0 -39px;}
   .cell.active {background-position: 0 -23px;}
+  .cell.fixed {background-position: 0 -39px;}
   .cell.mine {background-position: -64px -39px;}
   .cell.flag {background-position: -16px -39px;}
   .cell.triggerDead {background-position: -32px -39px;}

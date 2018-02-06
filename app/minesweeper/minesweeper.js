@@ -79,7 +79,8 @@ export default {
       return !adjMine && this.getAdjCellComp(rn, cn)
     },
     openPropagation (cell) {
-      if (!cell.open) this.gameStart = true
+      if (cell.fixed) return // cell is immutable
+      this.gameStart = true
       let queue = [cell]
       while (queue.length) queue.push(...(this.open(queue.shift()) || [])) // Breadth First Search
       this.openCount = _.sumBy(this.$refs.cells, 'open')
@@ -103,17 +104,20 @@ export default {
     },
     mousedown ($event, {rn, cn}) {
       this.$set(this.mouseBtn, $event.button, true)
-      if (this.mouseBtn[0] && this.mouseBtn[2]) this.grabAdj(rn, cn)
+      let [left, , right] = this.mouseBtn
+      if (left && right) this.grabAdj(rn, cn)
     },
     mouseout () {
-      if (this.mouseBtn[0] && this.mouseBtn[2]) this.releaseAdj(false)
+      let [left, , right] = this.mouseBtn
+      if (left && right) this.releaseAdj(false)
       this.mouseBtn = [false, false, false]
     },
     mouseup ($event, {rn, cn}) {
       let cell = this.getCellComp(rn, cn)
-      if (this.mouseBtn[0] && this.mouseBtn[2]) this.releaseAdj(cell)
-      else if (this.mouseBtn[0]) this.openPropagation(cell)
-      else if (this.mouseBtn[2]) this.mark(cell)
+      let [left, , right] = this.mouseBtn
+      if (left && right) this.releaseAdj(cell)
+      else if (left) this.openPropagation(cell)
+      else if (right) this.mark(cell)
       this.mouseBtn = [false, false, false]
     }
   },
