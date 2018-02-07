@@ -38,10 +38,9 @@ export default {
       let [height, width] = this.size
       let mines = _.times(this.mineTotal, () => true)
       let empty = _.times(width * height - this.mineTotal, () => false)
-      this.mineTotal = mines.length
-      let grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0})).shuffle().chunk(width).value()
 
       // calculate adjacent mines
+      let grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0})).shuffle().chunk(width).value()
       grid.forEach((row, rn) => row.forEach((cell, cn) => {
         Object.assign(cell, {rn, cn})
         if (!cell.mine) return
