@@ -5,7 +5,7 @@
   "description": "Vue Minesweeper",
   "keywords": [],
   "devDependencies": {
-    "babel-core": "^6.24.1",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.0.0",
     "babel-plugin-istanbul": "^4.1.5",
     "babel-polyfill": "^6.26.0",
@@ -21,8 +21,9 @@
     "eslint-plugin-standard": "^3.0.1",
     "file-loader": "^0.11.2",
     "jquery": "^3.2.1",
-    "lodash": "^4.17.4",
-    "node-sass": "^4.7.2",
+    "lodash": "^4.17.11",
+    "node-sass": "^4.11.0",
+    "push-dir": "^0.4.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "uglify-js": "^2.8.0",
@@ -38,6 +39,7 @@
     "start": "webpack-dev-server --content-base www/ --hot",
     "build": "webpack",
     "build:prod": "webpack --env.prod",
+    "gh-pages": "npm run build:prod && node node_modules/push-dir/bin/push-dir --dir=www --branch=gh-pages --cleanup",
     "lint": "eslint app test --ext .js,.mjs,.vue",
     "lint:fix": "eslint app test --ext .js,.mjs,.vue --fix"
   },

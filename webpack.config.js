@@ -13,7 +13,7 @@ module.exports = function (env = {}) {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'www/'),
       devtoolModuleFilenameTemplate: sourceMapFileNameTemplate,
-      devtoolFallbackModuleFilenameTemplate: sourceMapFileNameDupTemplate,
+      devtoolFallbackModuleFilenameTemplate: sourceMapFileNameDupTemplate
     }
   })
   if (env.prod) {

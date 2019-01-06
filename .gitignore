@@ -5,3 +5,6 @@ node_modules
 .vscode
 .tscache
 .idea
+www/**
+!www/favicon.ico
+!www/index.html
