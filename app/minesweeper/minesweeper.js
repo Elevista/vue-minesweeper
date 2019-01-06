@@ -21,7 +21,7 @@ export default {
   created () { this.reset() },
   computed: {
     leftNum () {
-      let n = _.clamp(this.mineTotal - this.flagCount, -99, 999)
+      const n = _.clamp(this.mineTotal - this.flagCount, -99, 999)
       return n < 0 ? '-' + _.padStart(Math.abs(n), 2, 0) : _.padStart(n, 3, 0)
     },
     rightNum () {
@@ -35,12 +35,12 @@ export default {
       this.gameStart = false
       this.flagCount = 0
       this.state = {dead: false, win: false}
-      let [height, width] = this.size
-      let mines = _.times(this.mineTotal, () => true)
-      let empty = _.times(width * height - this.mineTotal, () => false)
+      const [height, width] = this.size
+      const mines = _.times(this.mineTotal, () => true)
+      const empty = _.times(width * height - this.mineTotal, () => false)
 
       // calculate adjacent mines
-      let grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0})).shuffle().chunk(width).value()
+      const grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0})).shuffle().chunk(width).value()
       grid.forEach((row, rn) => row.forEach((cell, cn) => {
         Object.assign(cell, {rn, cn})
         if (!cell.mine) return
@@ -50,7 +50,7 @@ export default {
       this.$nextTick(() => { this.grid = grid }) // to force re-create component state
     },
     getCellComp (rn, cn) {
-      let [height, width] = this.size
+      const [height, width] = this.size
       if (rn < 0 || rn >= height || cn < 0 || cn >= width) return
       return this.$refs.cells[width * rn + cn]
     },
@@ -58,7 +58,7 @@ export default {
       return this.$data._adj.map(([r, c]) => this.getCellComp(rn + r, cn + c)).filter(x => x)
     },
     checkWin () {
-      let {state: {dead}, flagCount, openCount, $refs: {cells: {length}}} = this
+      const {state: {dead}, flagCount, openCount, $refs: {cells: {length}}} = this
       if (dead || ((flagCount + openCount) !== length)) return
       this.win()
     },
@@ -73,14 +73,14 @@ export default {
     },
     open (cell) {
       if (!cell.doOpen()) return // open fail
-      let {rn, cn, mine, adjMine} = cell.data
+      const {rn, cn, mine, adjMine} = cell.data
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(rn, cn)
     },
     openPropagation (cell) {
       if (cell.fixed) return // cell is immutable
       this.gameStart = true
-      let queue = [cell]
+      const queue = [cell]
       while (queue.length) queue.push(...(this.open(queue.shift()) || [])) // Breadth First Search
       this.openCount = _.sumBy(this.$refs.cells, 'open')
       this.checkWin()
@@ -103,17 +103,17 @@ export default {
     },
     mousedown ($event, {rn, cn}) {
       this.$set(this.mouseBtn, $event.button, true)
-      let [left, , right] = this.mouseBtn
+      const [left, , right] = this.mouseBtn
       if (left && right) this.grabAdj(rn, cn)
     },
     mouseout () {
-      let [left, , right] = this.mouseBtn
+      const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(false)
       this.mouseBtn = [false, false, false]
     },
     mouseup ($event, {rn, cn}) {
-      let cell = this.getCellComp(rn, cn)
-      let [left, , right] = this.mouseBtn
+      const cell = this.getCellComp(rn, cn)
+      const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(cell)
       else if (left) this.openPropagation(cell)
       else if (right) this.mark(cell)
