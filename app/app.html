@@ -3,6 +3,7 @@
     <ul class="toolbar">
       <li :class="{open:menu.game}" @click="menu.game=!menu.game">
         <span>Game</span>
+        <div class="cancel"></div>
         <ul class="menu">
           <li v-for="item of levels" :class="{checked:level===item}" @click="level=item">
             <span class="check">✔</span> {{item.name}}
