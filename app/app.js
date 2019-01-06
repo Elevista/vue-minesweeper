@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     reset () {
-      let {size, mineTotal} = this.level
+      const {size, mineTotal} = this.level
       this.$refs.minesweeper.reset(size, mineTotal)
     }
   },
