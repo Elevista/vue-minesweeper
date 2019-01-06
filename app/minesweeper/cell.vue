@@ -14,7 +14,7 @@
     },
     computed: {
       display () {
-        let {open, data: {mine, adjMine}, state: {dead}} = this
+        const {open, data: {mine, adjMine}, state: {dead}} = this
         if (open) return mine ? 'mine' : 'n' + adjMine
         if (dead) return ['dead', mine && 'mine']
       },
