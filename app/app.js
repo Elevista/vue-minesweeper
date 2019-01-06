@@ -9,11 +9,17 @@ export default {
         {name: 'Intermediate', size: [16, 16], mineTotal: 40},
         {name: 'Expert', size: [16, 30], mineTotal: 99}
       ],
-      level: null
+      level: null,
+      menu: {game: false}
     }
   },
   created () {
     this.level = this.levels[0]
+  },
+  watch: {
+    level (nv, ov) {
+      ov && this.reset()
+    }
   },
   methods: {
     reset () {

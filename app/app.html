@@ -1,9 +1,16 @@
 <div class="app">
-  <minesweeper ref="minesweeper"/>
-  <div class="option">
-    <select v-model="level">
-      <option v-for="item of levels" :value="item">{{item.name}}</option>
-    </select>
-    <button @click="reset">reset</button>
+  <div class="flex">
+    <ul class="toolbar">
+      <li :class="{open:menu.game}" @click="menu.game=!menu.game">
+        <span>Game</span>
+        <ul class="menu">
+          <li v-for="item of levels" :class="{checked:level===item}" @click="level=item">
+            <span class="check">✔</span> {{item.name}}
+          </li>
+        </ul>
+      </li>
+      <li>Help</li>
+    </ul>
+    <minesweeper ref="minesweeper"/>
   </div>
 </div>
