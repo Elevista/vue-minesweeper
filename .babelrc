@@ -1,0 +1,10 @@
+{
+  "env": {
+    "production": {
+      "presets": [
+        ["es2015", {"modules": false}]
+      ],
+      "comments": false
+    }
+  }
+}

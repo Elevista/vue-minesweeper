@@ -1,0 +1,21 @@
+<div @contextmenu.prevent class="minesweeper">
+  <div class="indicator">
+    <div class="left">
+      <span class="count" v-for="x of leftNum" :class="'n'+x">{{x}}</span>
+    </div>
+    <button class="smiley" :class="[state,{ooh:mouseBtn[0]}]" @click="reset()"></button>
+    <div class="right">
+      <span class="count" v-for="x of rightNum" :class="'n'+x">{{x}}</span>
+    </div>
+  </div>
+
+  <div class="board">
+    <div v-for="row of grid" class="row">
+      <cell v-for="data of row" ref="cells" :data="data" :key="data.cn" :state="state"
+            @mousedown.native="mousedown($event,data)"
+            @mouseup.native="mouseup($event,data)"
+            @mouseout.native="mouseout">{{data}}</cell>
+    </div>
+    </tbody>
+  </div>
+</div>

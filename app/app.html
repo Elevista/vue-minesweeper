@@ -1,0 +1,16 @@
+<div class="app">
+  <div class="flex">
+    <ul class="toolbar">
+      <li :class="{open:menu.game}" @click="menu.game=!menu.game">
+        <span>Game</span>
+        <ul class="menu">
+          <li v-for="item of levels" :class="{checked:level===item}" @click="level=item">
+            <span class="check">✔</span> {{item.name}}
+          </li>
+        </ul>
+      </li>
+      <li>Help</li>
+    </ul>
+    <minesweeper ref="minesweeper"/>
+  </div>
+</div>

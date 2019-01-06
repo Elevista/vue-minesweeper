@@ -1,0 +1,53 @@
+.minesweeper {
+  display: inline-block;
+  background-color: silver;
+  border: outset 2px #eee;
+  padding: 6px;
+}
+.indicator {
+  height: 25px;
+  border: inset 2px #eee;
+  padding: 4px 6px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.board {border: inset 2px #eee;}
+.board .row {height: 16px; white-space: nowrap;}
+.indicator * {background-repeat: no-repeat;}
+.indicator > * {color: transparent;}
+.indicator .smiley {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  background: url('sprite.png') no-repeat;
+  background-position-y: -55px;
+  background-position-x: 0;
+}
+.indicator .smiley.ooh {background-position-x: -52px;}
+.indicator .smiley.dead {background-position-x: -78px;}
+.indicator .smiley.win {background-position-x: -104px;}
+.indicator .smiley:active {background-position-x: -26px;}
+.indicator .left {float: left}
+.indicator .right {float: right}
+.indicator .count {
+  width: 13px;
+  height: 23px;
+  display: inline-block;
+  background: url('sprite.png') no-repeat;
+  background-position-y: 0;
+}
+.indicator .count.n0 {background-position-x: 0;}
+.indicator .count.n1 {background-position-x: -13px;}
+.indicator .count.n2 {background-position-x: -26px;}
+.indicator .count.n3 {background-position-x: -39px;}
+.indicator .count.n4 {background-position-x: -52px;}
+.indicator .count.n5 {background-position-x: -65px;}
+.indicator .count.n6 {background-position-x: -78px;}
+.indicator .count.n7 {background-position-x: -91px;}
+.indicator .count.n8 {background-position-x: -104px;}
+.indicator .count.n9 {background-position-x: -117px;}
+.indicator .count.n- {background-position-x: -130px;}

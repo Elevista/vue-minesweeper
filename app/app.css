@@ -1,0 +1,67 @@
+.app { 
+  width: 100%; height: 100%; background-color: silver;
+  font-size: 13px;
+  font-family: Tahoma;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.option {
+  margin-top: 40px;
+}
+.option input {
+  width: 50px;
+}
+ul{list-style: none;}
+.toolbar {
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+.toolbar>li {
+  display: inline-block;
+  cursor: default;
+}
+.toolbar>li>span{
+  display: block;
+  border: solid 2px transparent; 
+  padding: 0 5px;
+}
+.toolbar>li>span:hover{
+  border: outset 2px #eee;
+}
+.toolbar>li.open>span{
+  border: inset 2px #eee;
+}
+.toolbar>li:not(.open)>.menu {
+  display: none;
+}
+.menu{
+  position: absolute;
+  background-color: silver;
+  top: 100%;
+  left: 0;
+  border: outset 2px #eee;
+  width: 120px;
+  padding: 0;
+}
+.menu>li{
+  padding: 4px 6px;
+}
+.menu>li>.check{visibility: hidden;}
+.menu>li.checked>.check{visibility: visible;}
+.menu>li:hover{
+  color:white;
+  background-color: #050081;
+}
+.check {font-weight:bolder;}
+button{
+  margin:2px 2px 2px 0;
+  background-color: silver;
+  border: outset 2px #eee;
+  font-size:9px;
+  font-weight:bold;
+  font-family:Tahoma;
+  text-align:center;
+}
