@@ -1,12 +1,11 @@
-.app { 
+.container { 
   width: 100%; height: 100%; background-color: silver;
   font-size: 13px;
   font-family: Tahoma;
   display: flex;
   justify-content: center;
-  align-items: start;
 }
-
+.app{max-width: 100%;}
 .option {
   margin-top: 40px;
 }
