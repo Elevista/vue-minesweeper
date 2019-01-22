@@ -40,22 +40,19 @@ export default {
       const empty = _.times(width * height - this.mineTotal, () => false)
 
       // calculate adjacent mines
-      const grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0})).shuffle().chunk(width).value()
+      const grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0, adjIdx: []})).shuffle().chunk(width).value()
       grid.forEach((row, rn) => row.forEach((cell, cn) => {
-        Object.assign(cell, {rn, cn})
-        if (!cell.mine) return
-        _(this.$data._adj).map(([r, c]) => _.get(grid, [rn + r, cn + c])).forEach(x => x && x.adjMine++)
+        Object.assign(cell, {rn, cn, idx: width * rn + cn})
+        _(this.$data._adj).map(([r, c]) => _.get(grid, [rn + r, cn + c])).compact().forEach(x => {
+          if (cell.mine) x.adjMine++
+          x.adjIdx.push(cell.idx)
+        })
       }))
       this.grid = [[]]
       this.$nextTick(() => { this.grid = grid }) // to force re-create component state
     },
-    getCellComp (rn, cn) {
-      const [height, width] = this.size
-      if (rn < 0 || rn >= height || cn < 0 || cn >= width) return
-      return this.$refs.cells[width * rn + cn]
-    },
-    getAdjCellComp (rn, cn) {
-      return this.$data._adj.map(([r, c]) => this.getCellComp(rn + r, cn + c)).filter(x => x)
+    getAdjCellComp (cell) {
+      return cell.data.adjIdx.map(x => this.$refs.cells[x])
     },
     checkWin () {
       const {state: {dead}, flagCount, openCount, $refs: {cells: {length}}} = this
@@ -73,9 +70,9 @@ export default {
     },
     open (cell) {
       if (!cell.doOpen()) return // open fail
-      const {rn, cn, mine, adjMine} = cell.data
+      const {mine, adjMine} = cell.data
       if (mine) return this.dead(cell)
-      return !adjMine && this.getAdjCellComp(rn, cn)
+      return !adjMine && this.getAdjCellComp(cell)
     },
     openPropagation (cell) {
       if (cell.fixed) return // cell is immutable
@@ -90,8 +87,8 @@ export default {
       this.flagCount = _.sumBy(this.$refs.cells, 'flag')
       this.checkWin()
     },
-    grabAdj (rn, cn) {
-      this.selectedAdj = this.getAdjCellComp(rn, cn)
+    grabAdj (cell) {
+      this.selectedAdj = this.getAdjCellComp(cell)
       this.selectedAdj.forEach(cell => { cell.active = true })
     },
     releaseAdj (cell) {
@@ -101,18 +98,18 @@ export default {
       this.selectedAdj.forEach(cell => { cell.active = false })
       this.selectedAdj = []
     },
-    mousedown ($event, {rn, cn}) {
+    mousedown ($event, {idx}) {
       this.$set(this.mouseBtn, $event.button, true)
       const [left, , right] = this.mouseBtn
-      if (left && right) this.grabAdj(rn, cn)
+      if (left && right) this.grabAdj(this.$refs.cells[idx])
     },
     mouseout () {
       const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(false)
       this.mouseBtn = [false, false, false]
     },
-    mouseup ($event, {rn, cn}) {
-      const cell = this.getCellComp(rn, cn)
+    mouseup ($event, {idx}) {
+      const cell = this.$refs.cells[idx]
       const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(cell)
       else if (left) this.openPropagation(cell)
