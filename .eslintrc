@@ -1,8 +1,11 @@
 {
   "extends": [
-    "plugin:vue/recommended",
+    "plugin:vue/essential",
     "standard"
   ],
+  "rules":{
+    "vue/order-in-components": "error"
+  },
   "plugins": ["vue"],
   "globals": {
     "_": true,

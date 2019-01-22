@@ -6,4 +6,4 @@ import { lodashMixin } from './util/util.mjs'
 
 _.mixin(lodashMixin)
 
-new Vue({render: h => h(app), el: 'app'}) // eslint-disable-line no-new
+new Vue({ el: 'app', render: h => h(app) }) // eslint-disable-line no-new

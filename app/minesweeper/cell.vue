@@ -1,41 +1,45 @@
 <template>
-  <button class="cell" :class="[display,{active,flag,fixed,triggerDead}]"
-          @mousedown.left="active=true"
-          @mouseout.left="active=false"
-          @mouseup="active=false"></button>
+  <button
+    class="cell"
+    :class="[display,{active,flag,fixed,triggerDead}]"
+    @mousedown.left="active=true"
+    @mouseout.left="active=false"
+    @mouseup="active=false"
+  />
 </template>
 
 <script>
-  export default {
-    name: 'cell',
-    props: ['data', 'state'],
-    data () {
-      return {open: false, flag: false, triggerDead: false, active: false}
+export default {
+  name: 'Cell',
+  props: ['data', 'state'],
+  data () {
+    return { open: false, flag: false, triggerDead: false, active: false }
+  },
+  computed: {
+    display () {
+      const { open, data: { mine, adjMine }, state: { dead } } = this
+      if (open) return mine ? 'mine' : 'n' + adjMine
+      if (dead) return ['dead', mine && 'mine']
+      return undefined
     },
-    watch: {
-      data () { Object.assign(this, this.$options.data()) } // reset component state when data changed
+    fixed () { return this.state.dead || this.state.win || this.open }
+  },
+  watch: {
+    data () { Object.assign(this, this.$options.data()) } // reset component state when data changed
+  },
+  methods: {
+    doOpen () {
+      if (this.fixed || this.flag) return false
+      this.open = true
+      return true
     },
-    computed: {
-      display () {
-        const {open, data: {mine, adjMine}, state: {dead}} = this
-        if (open) return mine ? 'mine' : 'n' + adjMine
-        if (dead) return ['dead', mine && 'mine']
-      },
-      fixed () { return this.state.dead || this.state.win || this.open }
-    },
-    methods: {
-      doOpen () {
-        if (this.fixed || this.flag) return false
-        this.open = true
-        return true
-      },
-      mark () {
-        if (this.fixed) return false
-        this.flag = !this.flag
-        return true
-      }
+    mark () {
+      if (this.fixed) return false
+      this.flag = !this.flag
+      return true
     }
   }
+}
 </script>
 
 <style scoped>

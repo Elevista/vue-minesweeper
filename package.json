@@ -26,7 +26,7 @@
     "build": "webpack",
     "build:prod": "webpack --mode=production",
     "gh-pages": "npm run build:prod && node node_modules/push-dir/bin/push-dir --dir=www --branch=gh-pages --cleanup",
-    "lint:fix": "node_modules/.bin/standard app --ext .js,.mjs,.vue --fix"
+    "lint": "node_modules/.bin/standard app --ext .js,.mjs,.vue --fix"
   },
   "main": "app.js",
   "repository": {

@@ -5,7 +5,7 @@ export default {
   data () {
     return {
       grid: [[]],
-      state: {dead: false, win: false},
+      state: { dead: false, win: false },
       gameStart: false,
       size: [9, 9],
       openCount: 0,
@@ -30,19 +30,19 @@ export default {
   },
   methods: {
     reset (size, mineTotal = 0) {
-      if (size) Object.assign(this, {size, mineTotal})
+      if (size) Object.assign(this, { size, mineTotal })
       this.timer = 0
       this.gameStart = false
       this.flagCount = 0
-      this.state = {dead: false, win: false}
+      this.state = { dead: false, win: false }
       const [height, width] = this.size
       const mines = _.times(this.mineTotal, () => true)
       const empty = _.times(width * height - this.mineTotal, () => false)
 
       // calculate adjacent mines
-      const grid = _(mines).concat(empty).map(x => ({mine: x, adjMine: 0, adjIdx: []})).shuffle().chunk(width).value()
+      const grid = _(mines).concat(empty).map(x => ({ mine: x, adjMine: 0, adjIdx: [] })).shuffle().chunk(width).value()
       grid.forEach((row, rn) => row.forEach((cell, cn) => {
-        Object.assign(cell, {rn, cn, idx: width * rn + cn})
+        Object.assign(cell, { rn, cn, idx: width * rn + cn })
         _(this.$data._adj).map(([r, c]) => _.get(grid, [rn + r, cn + c])).compact().forEach(x => {
           if (cell.mine) x.adjMine++
           x.adjIdx.push(cell.idx)
@@ -54,7 +54,7 @@ export default {
       return cell.data.adjIdx.map(x => this.$refs.cells[x])
     },
     checkWin () {
-      const {state: {dead}, flagCount, openCount, $refs: {cells: {length}}} = this
+      const { state: { dead }, flagCount, openCount, $refs: { cells: { length } } } = this
       if (dead || ((flagCount + openCount) !== length)) return
       this.win()
     },
@@ -69,7 +69,7 @@ export default {
     },
     open (cell) {
       if (!cell.doOpen()) return // open fail
-      const {mine, adjMine} = cell.data
+      const { mine, adjMine } = cell.data
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(cell)
     },
@@ -97,7 +97,7 @@ export default {
       this.selectedAdj.forEach(cell => { cell.active = false })
       this.selectedAdj = []
     },
-    mousedown ($event, {idx}) {
+    mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
       const [left, , right] = this.mouseBtn
       if (left && right) this.grabAdj(this.$refs.cells[idx])
@@ -107,7 +107,7 @@ export default {
       if (left && right) this.releaseAdj(false)
       this.mouseBtn = [false, false, false]
     },
-    mouseup ({idx}) {
+    mouseup ({ idx }) {
       const cell = this.$refs.cells[idx]
       const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(cell)
@@ -131,7 +131,7 @@ export default {
       }
     }
   },
-  components: {cell},
+  components: { cell },
   templateSrc: './minesweeper.html',
   styleSrc: './minesweeper.css'
 }

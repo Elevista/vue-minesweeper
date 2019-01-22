@@ -5,12 +5,12 @@ export default {
   data () {
     return {
       levels: [
-        {name: 'Beginner', size: [9, 9], mineTotal: 10},
-        {name: 'Intermediate', size: [16, 16], mineTotal: 40},
-        {name: 'Expert', size: [16, 30], mineTotal: 99}
+        { name: 'Beginner', size: [9, 9], mineTotal: 10 },
+        { name: 'Intermediate', size: [16, 16], mineTotal: 40 },
+        { name: 'Expert', size: [16, 30], mineTotal: 99 }
       ],
       level: null,
-      menu: {game: false}
+      menu: { game: false }
     }
   },
   created () {
@@ -23,11 +23,11 @@ export default {
   },
   methods: {
     reset () {
-      const {size, mineTotal} = this.level
+      const { size, mineTotal } = this.level
       this.$refs.minesweeper.reset(size, mineTotal)
     }
   },
-  components: {minesweeper},
+  components: { minesweeper },
   templateSrc: './app.html',
   styleSrc: './app.css'
 }
