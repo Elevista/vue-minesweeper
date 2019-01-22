@@ -1,7 +1,33 @@
+
+<template>
+<div @contextmenu.prevent class="minesweeper">
+  <div class="indicator">
+    <div class="left">
+      <span class="count" v-for="(x,i) of leftNum" :key="i" :class="'n'+x">{{x}}</span>
+    </div>
+    <button class="smiley" :class="[state,{ooh:mouseBtn[0]}]" @click="reset()"></button>
+    <div class="right">
+      <span class="count" v-for="(x,i) of rightNum" :key="i" :class="'n'+x">{{x}}</span>
+    </div>
+  </div>
+
+  <div class="board">
+    <div v-for="(row,i) of grid" class="row" :key="i">
+      <cell v-for="data of row" ref="cells" :data="data" :key="data.idx" :state="state"
+            @mousedown.native="mousedown($event,data)"
+            @mouseup.native="mouseup(data)"
+            @mouseout.native="mouseout"/>
+    </div>
+  </div>
+</div>
+</template>
+<script>
+
 import cell from './cell.vue'
 
 export default {
   name: 'minesweeper',
+  components: { cell },
   data () {
     return {
       grid: [[]],
@@ -14,11 +40,9 @@ export default {
       timer: 0,
       timerInterval: null,
       mouseBtn: [false, false, false],
-      selectedAdj: [],
-      _adj: [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
+      selectedAdj: []
     }
   },
-  created () { this.reset() },
   computed: {
     leftNum () {
       const n = _.clamp(this.mineTotal - this.flagCount, -99, 999)
@@ -28,22 +52,39 @@ export default {
       return _.padStart(_.clamp(this.timer, 0, 999), 3, 0)
     }
   },
+  watch: {
+    async size () { // $refs order problem
+      await this.$nextTick()
+      this.$refs.cells.sort((a, b) => a.data.idx - b.data.idx)
+    },
+    gameStart (truthy) {
+      if (truthy) {
+        this.timer = 1
+        this.timerInterval = setInterval(() => this.timer++, 1000)
+      } else {
+        this.timerInterval = clearInterval(this.timerInterval)
+      }
+    }
+  },
+  created () { this.reset() },
+  destroyed () { clearInterval(this.timerInterval) },
   methods: {
     reset (size, mineTotal = 0) {
       if (size) Object.assign(this, { size, mineTotal })
+      const adjCoord = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
+      const [height, width] = this.size
+      const mines = _.times(this.mineTotal, () => true)
+      const empty = _.times(width * height - this.mineTotal, () => false)
       this.timer = 0
       this.gameStart = false
       this.flagCount = 0
       this.state = { dead: false, win: false }
-      const [height, width] = this.size
-      const mines = _.times(this.mineTotal, () => true)
-      const empty = _.times(width * height - this.mineTotal, () => false)
 
       // calculate adjacent mines
       const grid = _(mines).concat(empty).map(x => ({ mine: x, adjMine: 0, adjIdx: [] })).shuffle().chunk(width).value()
       grid.forEach((row, rn) => row.forEach((cell, cn) => {
         Object.assign(cell, { rn, cn, idx: width * rn + cn })
-        _(this.$data._adj).map(([r, c]) => _.get(grid, [rn + r, cn + c])).compact().forEach(x => {
+        _(adjCoord).map(([r, c]) => _.get(grid, [rn + r, cn + c])).compact().forEach(x => {
           if (cell.mine) x.adjMine++
           x.adjIdx.push(cell.idx)
         })
@@ -105,7 +146,7 @@ export default {
     mouseout () {
       const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(false)
-      this.mouseBtn = [false, false, false]
+      if (left || right) this.mouseBtn = [false, false, false]
     },
     mouseup ({ idx }) {
       const cell = this.$refs.cells[idx]
@@ -116,22 +157,9 @@ export default {
       this.mouseBtn = [false, false, false]
     }
   },
-  destroyed () { clearInterval(this.timerInterval) },
-  watch: {
-    async size () { // $refs order problem
-      await this.$nextTick()
-      this.$refs.cells.sort((a, b) => a.data.idx - b.data.idx)
-    },
-    gameStart (truthy) {
-      if (truthy) {
-        this.timer = 1
-        this.timerInterval = setInterval(() => this.timer++, 1000)
-      } else {
-        this.timerInterval = clearInterval(this.timerInterval)
-      }
-    }
-  },
-  components: { cell },
   templateSrc: './minesweeper.html',
   styleSrc: './minesweeper.css'
 }
+
+</script>
+<style src="./minesweeper.css" scoped></style>
