@@ -48,8 +48,7 @@ export default {
           x.adjIdx.push(cell.idx)
         })
       }))
-      this.grid = [[]]
-      this.$nextTick(() => { this.grid = grid }) // to force re-create component state
+      this.grid = grid
     },
     getAdjCellComp (cell) {
       return cell.data.adjIdx.map(x => this.$refs.cells[x])
@@ -108,7 +107,7 @@ export default {
       if (left && right) this.releaseAdj(false)
       this.mouseBtn = [false, false, false]
     },
-    mouseup ($event, {idx}) {
+    mouseup ({idx}) {
       const cell = this.$refs.cells[idx]
       const [left, , right] = this.mouseBtn
       if (left && right) this.releaseAdj(cell)
@@ -119,6 +118,10 @@ export default {
   },
   destroyed () { clearInterval(this.timerInterval) },
   watch: {
+    async size () { // $refs order problem
+      await this.$nextTick()
+      this.$refs.cells.sort((a, b) => a.data.idx - b.data.idx)
+    },
     gameStart (truthy) {
       if (truthy) {
         this.timer = 1

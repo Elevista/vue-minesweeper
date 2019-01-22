@@ -12,6 +12,9 @@
     data () {
       return {open: false, flag: false, triggerDead: false, active: false}
     },
+    watch: {
+      data () { Object.assign(this, this.$options.data()) } // reset component state when data changed
+    },
     computed: {
       display () {
         const {open, data: {mine, adjMine}, state: {dead}} = this
