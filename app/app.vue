@@ -2,16 +2,18 @@
 <div class="container">
   <div class="app">
     <ul class="toolbar">
-      <li :class="{open:menu.game}" @click="menu.game=!menu.game">
+      <li class="game" tabindex="1" :class="{open:menu.game}" @click="menu.game=!menu.game" @blur="menu.game=false">
         <span>Game</span>
         <div class="cancel"></div>
-        <ul class="menu">
-          <li v-for="item of levels" :key="item.name" :class="{checked:level===item}" @click="level=item">
-            <span class="check">✔</span> {{item.name}}
-          </li>
-        </ul>
+        <div class="menu">
+          <ul>
+            <li v-for="item of levels" :key="item.name" :class="{checked:level===item}" @click="changeLevel(item)">
+              <span class="check">✔</span> {{item.name}}
+            </li>
+          </ul>
+        </div>
       </li>
-      <li>Help</li>
+      <li class="help"><span class="help">Help</span></li>
     </ul>
     <minesweeper ref="minesweeper"/>
   </div>
@@ -35,15 +37,21 @@ export default {
       menu: { game: false }
     }
   },
+  computed: {
+    isMenuOpen () { return !Object.values(this.menu).every(x => !x) }
+  },
   watch: {
-    level (nv, ov) {
-      ov && this.reset()
-    }
+    level (nv, ov) { ov && this.reset() },
+    isMenuOpen (v) { this.$emit('menu', v) }
   },
   created () {
     this.level = this.levels[0]
   },
   methods: {
+    changeLevel (item) {
+      this.level = item
+      this.$emit('changeLevel', item)
+    },
     reset () {
       const { size, mineTotal } = this.level
       this.$refs.minesweeper.reset(size, mineTotal)
@@ -54,9 +62,10 @@ export default {
 }
 </script>
 <style scoped>
+:focus {outline:none;}
 .container {
   width: 100%; height: 100%; background-color: silver;
-  font-size: 13px;
+  font-size: 12px;
   font-family: Tahoma;
   display: flex;
   justify-content: center;
@@ -70,57 +79,56 @@ export default {
 }
 ul{list-style: none;}
 .toolbar {
-  padding: 0;
+  padding: 1px 0;
   margin: 0;
   position: relative;
   user-select: none;
+  flex-direction: row;
+  display: flex;
 }
 .toolbar>li {
-  display: inline-block;
+  display: flex;
   cursor: default;
+  position: relative;
 }
 .toolbar>li>span{
-  display: block;
-  border: solid 2px transparent;
+  display: flex;
+  align-items: center;
+  border: solid 1px transparent;
   padding: 0 5px;
+  height: 16px;
 }
-.toolbar>li>span:hover{
-  border: outset 2px #eee;
+.toolbar>li>span:hover:not(.help){
+  border: outset 1px #eee;
 }
 .toolbar>li.open>span{
-  border: inset 2px #eee;
+  border: inset 1px #eee;
 }
-.toolbar>li:not(.open)>.menu {
-  display: none;
-}
+.toolbar>li:not(.open)>.menu {display: none;}
+
 .menu{
   position: absolute;
+  border:solid 1px silver; border-right-color: #000;border-bottom-color: #000;
   background-color: silver;
   top: 100%;
   left: 0;
-  border: outset 2px #eee;
+}
+.menu>ul{
+  border: outset 1px #eee;
   width: 120px;
   padding: 0;
 }
-.menu>li{
+.menu>ul>li{
   padding: 4px 6px;
 }
-.menu>li>.check{visibility: hidden;}
-.menu>li.checked>.check{visibility: visible;}
-.menu>li:hover{
+.menu>ul>li>.check{visibility: hidden;}
+.menu>ul>li.checked>.check{visibility: visible;}
+.menu>ul>li:hover{
   color:white;
-  background-color: #050081;
+  background-color: #0000a8;
 }
 .check {font-weight:bolder;}
-button{
-  margin:2px 2px 2px 0;
-  background-color: silver;
-  border: outset 2px #eee;
-  font-size:9px;
-  font-weight:bold;
-  font-family:Tahoma;
-  text-align:center;
-}
+
 .open .cancel {
   position: fixed;
   top: 0;
