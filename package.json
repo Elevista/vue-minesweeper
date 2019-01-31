@@ -10,7 +10,6 @@
     "file-loader": "^3.0.1",
     "lodash": "^4.17.11",
     "push-dir": "^0.4.1",
-    "sass-loader": "^7.1.0",
     "standard": "^12.0.1",
     "style-loader": "^0.23.1",
     "vue": "^2.5.22",
@@ -18,16 +17,34 @@
     "vue-template-compiler": "^2.5.22",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.1.14",
+    "webpack-hot-middleware": "^2.24.3",
+    "electron": "^4.0.2",
+    "electron-builder": "^20.38.5",
+    "electron-debug": "^2.1.0",
+    "electron-devtools-installer": "^2.2.4"
   },
   "scripts": {
     "start": "webpack-dev-server --content-base www/ --hot",
+    "electron": "electron electron/dev",
+    "electron:build": "webpack --config electron/webpack.config --mode=production && electron-builder",
     "build": "webpack",
     "build:prod": "webpack --mode=production",
     "gh-pages": "npm run build:prod && node node_modules/push-dir/bin/push-dir --dir=www --branch=gh-pages --cleanup",
     "lint": "node_modules/.bin/standard app --ext .js,.mjs,.vue --fix"
   },
-  "main": "app.js",
+  "build": {
+    "productName": "Minesweeper",
+    "appId": "com.elevista.minesweeper",
+    "directories": {
+      "output": "build",
+      "buildResources": "electron"
+    },
+    "files": [
+      "www"
+    ]
+  },
+  "main": "./www/main.js",
   "repository": {
     "type": "git"
   },

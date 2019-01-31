@@ -5,6 +5,7 @@ node_modules
 .vscode
 .tscache
 .idea
+build
 www/**
 !www/favicon.ico
 !www/index.html
