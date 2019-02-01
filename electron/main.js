@@ -11,6 +11,7 @@ function createWindow () {
     icon,
     show: false,
     frame: false,
+    transparent: true,
     resizable: false
   })
   win.setMenu(null)

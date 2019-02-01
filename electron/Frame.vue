@@ -46,16 +46,15 @@ export default {
 </script>
 <style scoped>
 .app{width: auto;display: inline-block;}
-.frame-border{display: inline-block;border:solid 1px silver;border-right-color: #000;border-bottom-color: #000;}
 .frame{
   display:inline-block;
   padding:1px;
   border: outset 1px #eee;
   user-select: none;
-  box-shadow: -1px -1px 0 1px silver, 1px 1px 0 2px #000;
+  background: silver;
+  box-shadow: -1px -1px 0 1px silver, 0 0 0 1px black;
   margin:1px;
 }
-.frame:not(.menu) .title {-webkit-app-region: drag;}
 .title{
   height: 16px;
   background: #0000a8;
@@ -65,10 +64,8 @@ export default {
   flex-direction: row;
   align-items: start;
 }
-.frame:not(.focus) .title{
-  background: #87888f;
-  color:#c0c7c8;
-}
+.frame:not(.menu) .title {-webkit-app-region: drag;}
+.frame:not(.focus) .title{ background: #87888f; color:#c0c7c8; }
 
 .rbborder{ padding-right: 1px;padding-bottom: 1px; padding:1px;box-shadow: -1px -1px 0 #000 inset}
 .title i{width:16px;height:16px;background: url('icons/16x16.png') no-repeat 0 0;display: inline-block; }
@@ -82,7 +79,7 @@ export default {
   background: url('icons/title_btns.png') no-repeat 0 0;
   background-color: silver;
   border: outset 1px #eee;
-  box-shadow: 0px 1px 0 0px #000, 1px 0px 0 0px #000, 1px 1px 0 0px #000;
+  box-shadow: 0 1px 0 0 #000, 1px 0 0 0 #000, 1px 1px 0 0 #000;
   box-sizing: content-box;
   margin: 1px 1px 1px 0;
   z-index: 1000;
@@ -100,5 +97,6 @@ export default {
 </style>
 <style>
 html{overflow: hidden;}
+html,body{background:transparent;}
 :focus {outline:none;}
 </style>
