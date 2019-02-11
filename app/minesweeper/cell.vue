@@ -1,11 +1,5 @@
 <template>
-  <button
-    class="cell"
-    :class="[display,{active,flag,fixed,triggerDead}]"
-    @mousedown.left="active=true"
-    @mouseout.left="active=false"
-    @mouseup="active=false"
-  />
+  <button class="cell" :class="[display,{active,flag,fixed,triggerDead}]"/>
 </template>
 
 <script>

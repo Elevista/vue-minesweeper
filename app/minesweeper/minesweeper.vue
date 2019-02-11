@@ -5,7 +5,7 @@
     <div class="left">
       <span class="count" v-for="(x,i) of leftNum" :key="i" :class="'n'+x">{{x}}</span>
     </div>
-    <button class="smiley" :class="[state,{ooh:mouseBtn[0]}]" @click="reset()"></button>
+    <button class="smiley" :class="[state,{ooh}]" @click="reset()"></button>
     <div class="right">
       <span class="count" v-for="(x,i) of rightNum" :key="i" :class="'n'+x">{{x}}</span>
     </div>
@@ -16,7 +16,7 @@
       <cell v-for="data of row" ref="cells" :data="data" :key="data.idx" :state="state"
             @mousedown.native="mousedown($event,data)"
             @mouseup.native="mouseup(data)"
-            @mouseout.native="mouseout"/>
+            @mouseout.native="mouseout(data)"/>
     </div>
   </div>
 </div>
@@ -44,6 +44,7 @@ export default {
     }
   },
   computed: {
+    ooh () { return this.mouseBtn[0] || this.mouseBtn[1] },
     leftNum () {
       const n = _.clamp(this.mineTotal - this.flagCount, -99, 999)
       return n < 0 ? '-' + _.padStart(Math.abs(n), 2, 0) : _.padStart(n, 3, 0)
@@ -140,18 +141,23 @@ export default {
     },
     mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
-      const [left, , right] = this.mouseBtn
-      if (left && right) this.grabAdj(this.$refs.cells[idx])
+      const [left, middle, right] = this.mouseBtn
+      const cell = this.$refs.cells[idx]
+      cell.active = true
+      if (middle || (left && right)) this.grabAdj(cell)
     },
-    mouseout () {
-      const [left, , right] = this.mouseBtn
-      if (left && right) this.releaseAdj(false)
-      if (left || right) this.mouseBtn = [false, false, false]
+    mouseout ({ idx }) {
+      const cell = this.$refs.cells[idx]
+      cell.active = false
+      const [left, middle, right] = this.mouseBtn
+      if (middle || (left && right)) this.releaseAdj(false)
+      if (middle || left || right) this.mouseBtn = [false, false, false]
     },
     mouseup ({ idx }) {
       const cell = this.$refs.cells[idx]
-      const [left, , right] = this.mouseBtn
-      if (left && right) this.releaseAdj(cell)
+      cell.active = false
+      const [left, middle, right] = this.mouseBtn
+      if (middle || (left && right)) this.releaseAdj(cell)
       else if (left) this.openPropagation(cell)
       else if (right) this.mark(cell)
       this.mouseBtn = [false, false, false]
