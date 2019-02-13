@@ -5,38 +5,37 @@
     <div class="left">
       <span class="count" v-for="(x,i) of leftNum" :key="i" :class="'n'+x">{{x}}</span>
     </div>
-    <button class="smiley" :class="[state,{ooh:mouseBtn[0]}]" @click="reset()"></button>
+    <button class="smiley" :class="[state,{ooh}]" @click="reset()"></button>
     <div class="right">
       <span class="count" v-for="(x,i) of rightNum" :key="i" :class="'n'+x">{{x}}</span>
     </div>
   </div>
-
   <div class="board">
     <div v-for="(row,i) of grid" class="row" :key="i">
-      <cell v-for="data of row" ref="cells" :data="data" :key="data.idx" :state="state"
+      <cell v-for="data of row" ref="cells" :key="data.idx"
+            :data="data" :state="state" :qmark="qmark"
             @mousedown.native="mousedown($event,data)"
             @mouseup.native="mouseup(data)"
-            @mouseout.native="mouseout"/>
+            @mouseout.native="mouseout(data)"/>
     </div>
   </div>
 </div>
 </template>
 <script>
 
-import cell from './cell.vue'
+import Cell from './Cell.vue'
 
 export default {
   name: 'minesweeper',
-  components: { cell },
+  components: { Cell },
+  props: { level: { required: true }, qmark: { default: false } },
   data () {
     return {
       grid: [[]],
       state: { dead: false, win: false },
       gameStart: false,
-      size: [9, 9],
       openCount: 0,
       flagCount: 0,
-      mineTotal: 10,
       timer: 0,
       timerInterval: null,
       mouseBtn: [false, false, false],
@@ -44,8 +43,9 @@ export default {
     }
   },
   computed: {
+    ooh () { return this.mouseBtn[0] || this.mouseBtn[1] },
     leftNum () {
-      const n = _.clamp(this.mineTotal - this.flagCount, -99, 999)
+      const n = _.clamp(this.level.mineTotal - this.flagCount, -99, 999)
       return n < 0 ? '-' + _.padStart(Math.abs(n), 2, 0) : _.padStart(n, 3, 0)
     },
     rightNum () {
@@ -53,7 +53,7 @@ export default {
     }
   },
   watch: {
-    async size () { // $refs order problem
+    async 'level.size' () { // $refs order problem
       await this.$nextTick()
       this.$refs.cells.sort((a, b) => a.data.idx - b.data.idx)
     },
@@ -64,17 +64,17 @@ export default {
       } else {
         this.timerInterval = clearInterval(this.timerInterval)
       }
-    }
+    },
+    level () { this.reset() }
   },
   created () { this.reset() },
   destroyed () { clearInterval(this.timerInterval) },
   methods: {
-    reset (size, mineTotal = 0) {
-      if (size) Object.assign(this, { size, mineTotal })
+    reset () {
+      const { mineTotal, size: [height, width] } = this.level
       const adjCoord = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
-      const [height, width] = this.size
-      const mines = _.times(this.mineTotal, () => true)
-      const empty = _.times(width * height - this.mineTotal, () => false)
+      const mines = _.times(mineTotal, () => true)
+      const empty = _.times(width * height - mineTotal, () => false)
       this.timer = 0
       this.gameStart = false
       this.flagCount = 0
@@ -95,8 +95,13 @@ export default {
       return cell.data.adjIdx.map(x => this.$refs.cells[x])
     },
     checkWin () {
-      const { state: { dead }, flagCount, openCount, $refs: { cells: { length } } } = this
-      if (dead || ((flagCount + openCount) !== length)) return
+      const {
+        state: { dead },
+        level: { mineTotal },
+        $refs: { cells: { length } },
+        flagCount, openCount
+      } = this
+      if (dead || (flagCount !== mineTotal) || ((flagCount + openCount) !== length)) return
       this.win()
     },
     win () {
@@ -123,43 +128,45 @@ export default {
       this.checkWin()
     },
     mark (cell) {
-      if (!cell.mark()) return // mark fail
+      if (!cell.mark()) return // flag not changed
       this.flagCount = _.sumBy(this.$refs.cells, 'flag')
       this.checkWin()
     },
     grabAdj (cell) {
       this.selectedAdj = this.getAdjCellComp(cell)
-      this.selectedAdj.forEach(cell => { cell.active = true })
+      this.selectedAdj.forEach(cell => cell.press(true))
     },
     releaseAdj (cell) {
       if (cell && cell.open && (cell.data.adjMine === _.sumBy(this.selectedAdj, 'flag'))) {
         this.selectedAdj.forEach(cell => this.openPropagation(cell))
       }
-      this.selectedAdj.forEach(cell => { cell.active = false })
+      this.selectedAdj.forEach(cell => cell.press(false))
       this.selectedAdj = []
     },
     mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
-      const [left, , right] = this.mouseBtn
-      if (left && right) this.grabAdj(this.$refs.cells[idx])
+      const [left, middle, right] = this.mouseBtn
+      const cell = this.$refs.cells[idx]
+      if (left || middle) cell.press(true)
+      if (middle || (left && right)) this.grabAdj(cell)
     },
-    mouseout () {
-      const [left, , right] = this.mouseBtn
-      if (left && right) this.releaseAdj(false)
-      if (left || right) this.mouseBtn = [false, false, false]
+    mouseout ({ idx }) {
+      const cell = this.$refs.cells[idx]
+      cell.press(false)
+      const [left, middle, right] = this.mouseBtn
+      if (middle || (left && right)) this.releaseAdj(false)
+      if (middle || left || right) this.mouseBtn = [false, false, false]
     },
     mouseup ({ idx }) {
       const cell = this.$refs.cells[idx]
-      const [left, , right] = this.mouseBtn
-      if (left && right) this.releaseAdj(cell)
+      cell.press(false)
+      const [left, middle, right] = this.mouseBtn
+      if (middle || (left && right)) this.releaseAdj(cell)
       else if (left) this.openPropagation(cell)
       else if (right) this.mark(cell)
       this.mouseBtn = [false, false, false]
     }
-  },
-  templateSrc: './minesweeper.html',
-  styleSrc: './minesweeper.css'
+  }
 }
-
 </script>
-<style src="./minesweeper.css" scoped></style>
+<style src="./Minesweeper.css" scoped></style>

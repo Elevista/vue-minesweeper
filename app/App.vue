@@ -10,22 +10,26 @@
             <li v-for="item of levels" :key="item.name" :class="{checked:level===item}" @click="changeLevel(item)">
               <span class="check">✔</span> {{item.name}}
             </li>
+            <hr>
+            <li :class="{checked:qmark}" @click="qmark=!qmark">
+              <span class="check">✔</span> Marks(?)
+            </li>
           </ul>
         </div>
       </li>
       <li class="help"><span class="help">Help</span></li>
     </ul>
-    <minesweeper ref="minesweeper"/>
+    <minesweeper :level="level" :qmark="qmark"/>
   </div>
 </div>
 
 </template>
 <script>
-import minesweeper from './minesweeper/minesweeper.vue'
+import Minesweeper from './Minesweeper/Minesweeper.vue'
 
 export default {
-  name: 'app',
-  components: { minesweeper },
+  name: 'App',
+  components: { Minesweeper },
   data () {
     return {
       levels: [
@@ -33,7 +37,8 @@ export default {
         { name: 'Intermediate', size: [16, 16], mineTotal: 40 },
         { name: 'Expert', size: [16, 30], mineTotal: 99 }
       ],
-      level: null,
+      qmark: false,
+      level: { name: 'Beginner', size: [9, 9], mineTotal: 10 },
       menu: { game: false }
     }
   },
@@ -41,20 +46,12 @@ export default {
     isMenuOpen () { return !Object.values(this.menu).every(x => !x) }
   },
   watch: {
-    level (nv, ov) { ov && this.reset() },
     isMenuOpen (v) { this.$emit('menu', v) }
-  },
-  created () {
-    this.level = this.levels[0]
   },
   methods: {
     changeLevel (item) {
       this.level = item
       this.$emit('changeLevel', item)
-    },
-    reset () {
-      const { size, mineTotal } = this.level
-      this.$refs.minesweeper.reset(size, mineTotal)
     }
   },
   templateSrc: './app.html',
@@ -62,22 +59,18 @@ export default {
 }
 </script>
 <style scoped>
-:focus {outline:none;}
+:focus {outline: none;}
 .container {
-  width: 100%; height: 100%; background-color: silver;
+  width: 100%;
+  height: 100%;
+  background-color: silver;
   font-size: 12px;
   font-family: Tahoma;
   display: flex;
   justify-content: center;
 }
-.app{max-width: 100%;}
-.option {
-  margin-top: 40px;
-}
-.option input {
-  width: 50px;
-}
-ul{list-style: none;}
+.app {max-width: 100%;}
+ul {list-style: none;}
 .toolbar {
   padding: 1px 0;
   margin: 0;
@@ -86,54 +79,53 @@ ul{list-style: none;}
   flex-direction: row;
   display: flex;
 }
-.toolbar>li {
+.toolbar > li {
   display: flex;
   cursor: default;
   position: relative;
 }
-.toolbar>li>span{
+.toolbar > li > span {
   display: flex;
   align-items: center;
   border: solid 1px transparent;
   padding: 0 5px;
   height: 16px;
 }
-.toolbar>li>span:hover:not(.help){
-  border: outset 1px #eee;
-}
-.toolbar>li.open>span{
-  border: inset 1px #eee;
-}
-.toolbar>li:not(.open)>.menu {display: none;}
-
-.menu{
-  position: absolute;
-  border:solid 1px silver; border-right-color: #000;border-bottom-color: #000;
-  background-color: silver;
-  top: 100%;
-  left: 0;
-}
-.menu>ul{
-  border: outset 1px #eee;
-  width: 120px;
-  padding: 0;
-}
-.menu>ul>li{
-  padding: 4px 6px;
-}
-.menu>ul>li>.check{visibility: hidden;}
-.menu>ul>li.checked>.check{visibility: visible;}
-.menu>ul>li:hover{
-  color:white;
-  background-color: #0000a8;
-}
-.check {font-weight:bolder;}
-
-.open .cancel {
+.toolbar > li > span:hover:not(.help) {border: outset 1px #eee;}
+.toolbar > li.open > span {border: inset 1px #eee;}
+.toolbar > li.open .cancel {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
 }
+.toolbar > li:not(.open) > .menu {display: none;}
+.menu {
+  position: absolute;
+  border: solid 1px silver;
+  border-right-color: #000;
+  border-bottom-color: #000;
+  background-color: silver;
+  top: 100%;
+  left: 0;
+}
+.menu hr {
+  border-style: inset;
+  border-width: 1px;
+  margin: 3px 1px 4px 1px;
+}
+.menu > ul {
+  border: outset 1px #eee;
+  width: 120px;
+  padding: 1px;
+}
+.menu > ul > li {padding: 4px 6px;}
+.menu > ul > li.checked > .check {visibility: visible;}
+.menu > ul > li > .check {visibility: hidden;}
+.menu > ul > li:hover {
+  color: white;
+  background-color: #0000a8;
+}
+.check {font-weight: bolder;}
 </style>
