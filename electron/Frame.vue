@@ -1,13 +1,13 @@
 <template>
   <div class="frame" :class="{focus,menu}" tabindex="0">
     <div class="title" @mousedown="menu&&$el.focus()">
-      <i></i>
+      <i />
       <span class="name">Minsweeper</span>
-      <button class="min" @click="win.minimize()"></button>
-      <button class="max" disabled></button>
-      <button class="close" @click="win.close()"></button>
+      <button class="min" @click="win.minimize()" />
+      <button class="max" disabled />
+      <button class="close" @click="win.close()" />
     </div>
-    <App class="app" @changeLevel="resize" @menu="menu=$event"/>
+    <App class="app" @changeLevel="resize" @menu="menu=$event" />
   </div>
 </template>
 <script>
