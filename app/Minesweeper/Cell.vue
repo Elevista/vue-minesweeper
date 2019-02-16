@@ -1,35 +1,35 @@
 <template>
-  <button class="cell" :class="[display,{pressed,flag,fixed,triggerDead,question}]"/>
+  <button class="cell" :class="[display,{pressed,flag,fixed,triggerDead,question}]" />
 </template>
 <script>
 export default {
   name: 'Cell',
   props: ['data', 'state', 'qmark'],
   data () {
-    return { open: false, markState: 0, triggerDead: false, pressed: false }
+    return { opened: false, markState: 0, triggerDead: false, pressed: false }
   },
   computed: {
     display () {
-      const { open, data: { mine, adjMine }, state: { dead } } = this
-      if (open) return mine ? 'mine' : 'n' + adjMine
+      const { opened, data: { mine, adjMine }, state: { dead } } = this
+      if (opened) return mine ? 'mine' : `n${adjMine}`
       if (dead) return ['dead', mine && 'mine']
       return undefined
     },
     flag () { return this.markState === 1 },
     question () { return this.markState === 2 },
-    fixed () { return this.state.dead || this.state.win || this.open }
+    fixed () { return this.state.dead || this.state.win || this.opened }
   },
   watch: {
-    data () { Object.assign(this, this.$options.data()) } // reset component state when data changed
+    data () { Object.assign(this.$data, this.$options.data()) } // reset component state when data changed
   },
   methods: {
     press (v) {
-      if (this.state.dead || this.open) return
+      if (this.state.dead || this.opened) return
       this.pressed = v
     },
-    doOpen () {
+    open () {
       if (this.fixed || this.flag) return false
-      this.open = true
+      this.opened = true
       this.markState = 0
       return true
     },
