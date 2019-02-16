@@ -11,7 +11,7 @@ export default {
   computed: {
     display () {
       const { opened, data: { mine, adjMine }, state: { dead } } = this
-      if (opened) return mine ? 'mine' : 'n' + adjMine
+      if (opened) return mine ? 'mine' : `n${adjMine}`
       if (dead) return ['dead', mine && 'mine']
       return undefined
     },

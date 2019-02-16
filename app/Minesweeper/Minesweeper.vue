@@ -1,32 +1,33 @@
 
 <template>
-<div @contextmenu.prevent class="minesweeper">
-  <div class="indicator">
-    <div class="left">
-      <span class="count" v-for="(x,i) of leftNum" :key="i" :class="'n'+x">{{x}}</span>
+  <div class="minesweeper" @contextmenu.prevent>
+    <div class="indicator">
+      <div class="left">
+        <span v-for="(x,i) of leftNum" :key="i" class="count" :class="'n'+x">{{ x }}</span>
+      </div>
+      <button class="smiley" :class="[state,{ooh}]" @click="reset()" />
+      <div class="right">
+        <span v-for="(x,i) of rightNum" :key="i" class="count" :class="'n'+x">{{ x }}</span>
+      </div>
     </div>
-    <button class="smiley" :class="[state,{ooh}]" @click="reset()"></button>
-    <div class="right">
-      <span class="count" v-for="(x,i) of rightNum" :key="i" :class="'n'+x">{{x}}</span>
+    <div class="board">
+      <div v-for="(row,i) of grid" :key="i" class="row">
+        <cell v-for="data of row" ref="cells" :key="data.idx"
+              :data="data" :state="state" :qmark="qmark"
+              @mousedown.native="mousedown($event,data)"
+              @mouseup.native="mouseup(data)"
+              @mouseout.native="mouseout(data)"
+        />
+      </div>
     </div>
   </div>
-  <div class="board">
-    <div v-for="(row,i) of grid" class="row" :key="i">
-      <cell v-for="data of row" ref="cells" :key="data.idx"
-            :data="data" :state="state" :qmark="qmark"
-            @mousedown.native="mousedown($event,data)"
-            @mouseup.native="mouseup(data)"
-            @mouseout.native="mouseout(data)"/>
-    </div>
-  </div>
-</div>
 </template>
 <script>
 
 import Cell from './Cell.vue'
 
 export default {
-  name: 'minesweeper',
+  name: 'Minesweeper',
   components: { Cell },
   props: { level: { required: true }, qmark: { default: false } },
   data () {
@@ -46,7 +47,7 @@ export default {
     ooh () { return this.mouseBtn[0] || this.mouseBtn[1] },
     leftNum () {
       const n = _.clamp(this.level.mineTotal - this.flagCount, -99, 999)
-      return n < 0 ? '-' + _.padStart(Math.abs(n), 2, 0) : _.padStart(n, 3, 0)
+      return n < 0 ? `-${_.padStart(Math.abs(n), 2, 0)}` : _.padStart(n, 3, 0)
     },
     rightNum () {
       return _.padStart(_.clamp(this.timer, 0, 999), 3, 0)

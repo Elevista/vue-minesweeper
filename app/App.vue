@@ -1,28 +1,27 @@
 <template>
-<div class="container">
-  <div class="app">
-    <ul class="toolbar">
-      <li class="game" tabindex="1" :class="{open:menu.game}" @click="menu.game=!menu.game" @blur="menu.game=false">
-        <span>Game</span>
-        <div class="cancel"></div>
-        <div class="menu">
-          <ul>
-            <li v-for="item of levels" :key="item.name" :class="{checked:level===item}" @click="changeLevel(item)">
-              <span class="check">✔</span> {{item.name}}
-            </li>
-            <hr>
-            <li :class="{checked:qmark}" @click="qmark=!qmark">
-              <span class="check">✔</span> Marks(?)
-            </li>
-          </ul>
-        </div>
-      </li>
-      <li class="help"><span class="help">Help</span></li>
-    </ul>
-    <minesweeper :level="level" :qmark="qmark"/>
+  <div class="container">
+    <div class="app">
+      <ul class="toolbar">
+        <li class="game" tabindex="1" :class="{open:menu.game}" @click="menu.game=!menu.game" @blur="menu.game=false">
+          <span>Game</span>
+          <div class="cancel" />
+          <div class="menu">
+            <ul>
+              <li v-for="item of levels" :key="item.name" :class="{checked:level===item}" @click="changeLevel(item)">
+                <span class="check">✔</span> {{ item.name }}
+              </li>
+              <hr>
+              <li :class="{checked:qmark}" @click="qmark=!qmark">
+                <span class="check">✔</span> Marks(?)
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="help"><span class="help">Help</span></li>
+      </ul>
+      <minesweeper :level="level" :qmark="qmark" />
+    </div>
   </div>
-</div>
-
 </template>
 <script>
 import Minesweeper from './Minesweeper/Minesweeper.vue'
