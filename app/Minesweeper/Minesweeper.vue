@@ -132,7 +132,7 @@ export default {
       this.grabbed.forEach(cell => cell.press(true))
     },
     release (cell) {
-      if (cell && cell.open && (cell.data.adjMine === _.sumBy(this.grabbed, 'flag'))) {
+      if (cell && cell.opened && (cell.data.adjMine === _.sumBy(this.grabbed, 'flag'))) {
         this.grabbed.forEach(cell => this.openPropagation(cell))
       }
       this.grabbed.forEach(cell => cell.press(false))
