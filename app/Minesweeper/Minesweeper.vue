@@ -29,24 +29,23 @@ import Cell from './Cell.vue'
 export default {
   name: 'Minesweeper',
   components: { Cell },
-  props: { level: { required: true }, qmark: { default: false } },
+  props: { level: { type: Object, required: true }, qmark: Boolean },
   data () {
     return {
       grid: this.make(),
       state: { dead: false, win: false },
       gameStart: false,
-      openCount: 0,
-      flagCount: 0,
+      count: { open: 0, flag: 0 },
       timer: 0,
       mouseBtn: [false, false, false],
-      selectedAdj: [],
+      grabbed: [],
       timerInterval: undefined
     }
   },
   computed: {
     ooh () { return this.mouseBtn[0] || this.mouseBtn[1] },
     leftNum () {
-      const n = _.clamp(this.level.mineTotal - this.flagCount, -99, 999)
+      const n = _.clamp(this.level.mineTotal - this.count.flag, -99, 999)
       return n < 0 ? `-${_.padStart(Math.abs(n), 2, 0)}` : _.padStart(n, 3, 0)
     },
     rightNum () {
@@ -95,9 +94,9 @@ export default {
         state: { dead },
         level: { mineTotal },
         $refs: { cells: { length } },
-        flagCount, openCount
+        count: { flag, open }
       } = this
-      if (dead || (flagCount !== mineTotal) || ((flagCount + openCount) !== length)) return
+      if (dead || (flag !== mineTotal) || ((flag + open) !== length)) return
       this.win()
     },
     win () {
@@ -112,7 +111,7 @@ export default {
     open (cell) {
       if (!cell.open()) return // open fail
       const { mine, adjMine } = cell.data
-      this.openCount++
+      this.count.open++
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(cell)
     },
@@ -125,19 +124,19 @@ export default {
     },
     mark (cell) {
       if (!cell.mark()) return // flag not changed
-      this.flagCount += cell.flag ? 1 : -1
+      this.count.flag += cell.flag ? 1 : -1
       this.checkWin()
     },
     grab (cell) {
-      this.selectedAdj = this.getAdjCellComp(cell)
-      this.selectedAdj.forEach(cell => cell.press(true))
+      this.grabbed = this.getAdjCellComp(cell)
+      this.grabbed.forEach(cell => cell.press(true))
     },
     release (cell) {
-      if (cell && cell.open && (cell.data.adjMine === _.sumBy(this.selectedAdj, 'flag'))) {
-        this.selectedAdj.forEach(cell => this.openPropagation(cell))
+      if (cell && cell.opened && (cell.data.adjMine === _.sumBy(this.grabbed, 'flag'))) {
+        this.grabbed.forEach(cell => this.openPropagation(cell))
       }
-      this.selectedAdj.forEach(cell => cell.press(false))
-      this.selectedAdj = []
+      this.grabbed.forEach(cell => cell.press(false))
+      this.grabbed = []
     },
     mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
