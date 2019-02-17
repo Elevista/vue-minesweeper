@@ -33,23 +33,22 @@ export default {
   data () {
     return {
       grid: this.make(),
-      state: { dead: false, win: false },
-      gameStart: false,
+      state: { dead: false, win: false, time: 0 },
       count: { open: 0, flag: 0 },
-      timer: 0,
       mouseBtn: [false, false, false],
-      grabbed: [],
-      timerInterval: undefined
+      adjcncs: [],
+      interval: undefined
     }
   },
   computed: {
+    timer () { return !(!this.count.open || this.state.dead || this.state.win) },
     ooh () { return this.mouseBtn[0] || this.mouseBtn[1] },
     leftNum () {
       const n = _.clamp(this.level.mineTotal - this.count.flag, -99, 999)
       return n < 0 ? `-${_.padStart(Math.abs(n), 2, 0)}` : _.padStart(n, 3, 0)
     },
     rightNum () {
-      return _.padStart(_.clamp(this.timer, 0, 999), 3, 0)
+      return _.padStart(_.clamp(this.state.time, 0, 999), 3, 0)
     }
   },
   watch: {
@@ -57,17 +56,17 @@ export default {
       await this.$nextTick()
       this.$refs.cells.sort((a, b) => a.data.idx - b.data.idx)
     },
-    gameStart (truthy) {
+    timer (truthy) {
       if (truthy) {
-        this.timer = 1
-        this.timerInterval = setInterval(() => this.timer++, 1000)
+        this.state.time = 1
+        this.interval = setInterval(() => this.state.time++, 1000)
       } else {
-        this.timerInterval = clearInterval(this.timerInterval)
+        this.interval = clearInterval(this.interval)
       }
     },
     level () { this.reset() }
   },
-  destroyed () { clearInterval(this.timerInterval) },
+  destroyed () { clearInterval(this.interval) },
   methods: {
     make () {
       const { mineTotal, size: [height, width] } = this.level
@@ -101,11 +100,9 @@ export default {
     },
     win () {
       this.state.win = true
-      this.gameStart = false
     },
     dead (cell) {
       this.state.dead = true
-      this.gameStart = false
       cell.triggerDead = true // this cell caused dead
     },
     open (cell) {
@@ -117,7 +114,6 @@ export default {
     },
     openPropagation (cell) {
       if (cell.fixed) return // cell is immutable
-      this.gameStart = true
       const queue = [cell]
       while (queue.length) queue.push(...(this.open(queue.shift()) || [])) // Breadth First Search
       this.checkWin()
@@ -128,15 +124,15 @@ export default {
       this.checkWin()
     },
     grab (cell) {
-      this.grabbed = this.getAdjCellComp(cell)
-      this.grabbed.forEach(cell => cell.press(true))
+      this.adjcncs = this.getAdjCellComp(cell)
+      this.adjcncs.forEach(cell => cell.press(true))
     },
     release (cell) {
-      if (cell && cell.opened && (cell.data.adjMine === _.sumBy(this.grabbed, 'flag'))) {
-        this.grabbed.forEach(cell => this.openPropagation(cell))
+      if (cell && cell.opened && (cell.data.adjMine === _.sumBy(this.adjcncs, 'flag'))) {
+        this.adjcncs.forEach(cell => this.openPropagation(cell))
       }
-      this.grabbed.forEach(cell => cell.press(false))
-      this.grabbed = []
+      this.adjcncs.forEach(cell => cell.press(false))
+      this.adjcncs = []
     },
     mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
@@ -167,7 +163,7 @@ export default {
       } else if (right) this.mark(cell)
     },
     reset () {
-      clearInterval(this.timerInterval)
+      clearInterval(this.interval)
       Object.assign(this.$data, this.$options.data.call(this))
     }
   }
