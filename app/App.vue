@@ -52,9 +52,7 @@ export default {
       this.level = item
       this.$emit('changeLevel', item)
     }
-  },
-  templateSrc: './app.html',
-  styleSrc: './app.css'
+  }
 }
 </script>
 <style scoped>
