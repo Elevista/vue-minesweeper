@@ -95,7 +95,7 @@ export default {
         $refs: { cells: { length } },
         count: { flag, open }
       } = this
-      if (dead || (flag !== mineTotal) || ((flag + open) !== length)) return
+      if (dead || ((mineTotal + open) !== length)) return
       this.win()
     },
     win () {
