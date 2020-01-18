@@ -33,7 +33,7 @@ export default {
   data () {
     return {
       grid: this.make(),
-      state: { dead: false, win: false, time: 0 },
+      state: { dead: false, win: false, isFirstClick: true, time: 0 },
       count: { open: 0, flag: 0 },
       mouseBtn: [false, false, false],
       adjcncs: [],
@@ -106,8 +106,15 @@ export default {
       cell.triggerDead = true // this cell caused dead
     },
     open (cell) {
-      if (!cell.open()) return // open fail
       const { mine, adjMine } = cell.data
+      if (this.state.isFirstClick) {
+        this.state.isFirstClick = false
+        if (mine) {
+          console.log("i save your life !") // just for debug
+          return // todo: move the mine to another grid and remove this 'return'
+        }
+      }
+      if (!cell.open()) return // open fail
       this.count.open++
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(cell)
