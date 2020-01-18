@@ -181,18 +181,19 @@ export default {
         }
       }
 
-      cell.data.mine = false
       cell.data.adjIdx.forEach((each) => {
         if (!cells[each].data.mine) {
           cells[each].data.adjMine--
         }
       })
-      cells[targetIdx].data.mine = true
+      cell.data.mine = false
+      
       cells[targetIdx].data.adjIdx.forEach((each) => {
         if (!cells[each].data.mine) {
           cells[each].data.adjMine++
         }
       })
+      cells[targetIdx].data.mine = true
     }
   }
 }
