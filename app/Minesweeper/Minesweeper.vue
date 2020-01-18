@@ -106,15 +106,14 @@ export default {
       cell.triggerDead = true // this cell caused dead
     },
     open (cell) {
-      const { mine, adjMine } = cell.data
       if (this.state.isFirstClick) {
         this.state.isFirstClick = false
-        if (mine) {
-          console.log("i save your life !") // just for debug
-          return // todo: move the mine to another grid and remove this 'return'
+        if (cell.data.mine) {
+          this.movemine(cell)
         }
       }
       if (!cell.open()) return // open fail
+      const { mine, adjMine } = cell.data
       this.count.open++
       if (mine) return this.dead(cell)
       return !adjMine && this.getAdjCellComp(cell)
@@ -172,6 +171,28 @@ export default {
     reset () {
       clearInterval(this.interval)
       Object.assign(this.$data, this.$options.data.call(this))
+    },
+    movemine (cell) {
+      const cells = this.$refs.cells
+      let targetIdx = 0;
+      for (targetIdx = 0; targetIdx < cells.length; ++targetIdx) {
+        if (!cells[targetIdx].data.mine) {
+          break
+        }
+      }
+
+      cell.data.mine = false
+      cell.data.adjIdx.forEach((each) => {
+        if (!cells[each].data.mine) {
+          cells[each].data.adjMine--
+        }
+      })
+      cells[targetIdx].data.mine = true
+      cells[targetIdx].data.adjIdx.forEach((each) => {
+        if (!cells[each].data.mine) {
+          cells[each].data.adjMine++
+        }
+      })
     }
   }
 }
