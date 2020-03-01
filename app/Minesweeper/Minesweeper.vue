@@ -17,6 +17,7 @@
               @mousedown.native="mousedown($event,data)"
               @mouseup.native="mouseup(data)"
               @mouseout.native="mouseout(data)"
+              @mouseenter.native="mouseenter(data)"
         />
       </div>
     </div>
@@ -142,6 +143,9 @@ export default {
     },
     mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
+      this.mouseenter({ idx })
+    },
+    mouseenter ({ idx }) {
       const [left, middle, right] = this.mouseBtn
       const cell = this.$refs.cells[idx]
       if (left || middle) {
@@ -151,7 +155,7 @@ export default {
     },
     mouseout ({ idx }) {
       const [left, middle, right] = this.mouseBtn
-      if (middle || left || right) this.mouseBtn = [false, false, false]
+      // if (middle || left || right) this.mouseBtn = [false, false, false]
       const cell = this.$refs.cells[idx]
       if (left || middle) {
         cell.press(false)
@@ -174,7 +178,7 @@ export default {
     },
     movemine (cell) {
       const cells = this.$refs.cells
-      let targetIdx = 0;
+      let targetIdx = 0
       for (targetIdx = 0; targetIdx < cells.length; ++targetIdx) {
         if (!cells[targetIdx].data.mine) {
           break
