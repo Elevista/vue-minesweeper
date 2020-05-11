@@ -17,6 +17,7 @@
               @mousedown.native="mousedown($event,data)"
               @mouseup.native="mouseup(data)"
               @mouseout.native="mouseout(data)"
+              @mouseenter.native="mouseenter(data)"
         />
       </div>
     </div>
@@ -33,7 +34,7 @@ export default {
   data () {
     return {
       grid: this.make(),
-      state: { dead: false, win: false, time: 0 },
+      state: { dead: false, win: false, isFirstClick: true, time: 0 },
       count: { open: 0, flag: 0 },
       mouseBtn: [false, false, false],
       adjcncs: [],
@@ -95,7 +96,7 @@ export default {
         $refs: { cells: { length } },
         count: { flag, open }
       } = this
-      if (dead || (flag !== mineTotal) || ((flag + open) !== length)) return
+      if (dead || ((mineTotal + open) !== length)) return
       this.win()
     },
     win () {
@@ -106,6 +107,12 @@ export default {
       cell.triggerDead = true // this cell caused dead
     },
     open (cell) {
+      if (this.state.isFirstClick) {
+        this.state.isFirstClick = false
+        if (cell.data.mine) {
+          this.movemine(cell)
+        }
+      }
       if (!cell.open()) return // open fail
       const { mine, adjMine } = cell.data
       this.count.open++
@@ -136,6 +143,9 @@ export default {
     },
     mousedown ($event, { idx }) {
       this.$set(this.mouseBtn, $event.button, true)
+      this.mouseenter({ idx })
+    },
+    mouseenter ({ idx }) {
       const [left, middle, right] = this.mouseBtn
       const cell = this.$refs.cells[idx]
       if (left || middle) {
@@ -145,7 +155,7 @@ export default {
     },
     mouseout ({ idx }) {
       const [left, middle, right] = this.mouseBtn
-      if (middle || left || right) this.mouseBtn = [false, false, false]
+      // if (middle || left || right) this.mouseBtn = [false, false, false]
       const cell = this.$refs.cells[idx]
       if (left || middle) {
         cell.press(false)
@@ -165,6 +175,29 @@ export default {
     reset () {
       clearInterval(this.interval)
       Object.assign(this.$data, this.$options.data.call(this))
+    },
+    movemine (cell) {
+      const cells = this.$refs.cells
+      let targetIdx = 0
+      for (targetIdx = 0; targetIdx < cells.length; ++targetIdx) {
+        if (!cells[targetIdx].data.mine) {
+          break
+        }
+      }
+
+      cell.data.adjIdx.forEach((each) => {
+        if (!cells[each].data.mine) {
+          cells[each].data.adjMine--
+        }
+      })
+      cell.data.mine = false
+      
+      cells[targetIdx].data.adjIdx.forEach((each) => {
+        if (!cells[each].data.mine) {
+          cells[each].data.adjMine++
+        }
+      })
+      cells[targetIdx].data.mine = true
     }
   }
 }

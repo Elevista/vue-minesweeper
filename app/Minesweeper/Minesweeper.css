@@ -42,6 +42,11 @@
   display: inline-block;
   background: url(sprite.png) no-repeat;
   background-position-y: 0;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .indicator .count.n0 {background-position-x: 0;}
 .indicator .count.n1 {background-position-x: -13px;}
